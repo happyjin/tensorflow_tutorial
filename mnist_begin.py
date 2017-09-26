@@ -16,13 +16,14 @@ x = tf.placeholder(tf.float32, [None, 784]) # None means that a dimension can be
 W = tf.Variable(tf.zeros([784, 10])) # initialize this variable with zeros
 b = tf.Variable(tf.zeros([10]))
 # step 2: implement model (model with no specific data in it)
-y = tf.nn.softmax(tf.matmul(x, W) + b)
+y = tf.matmul(x, W) + b
 # step 3: implement cross-entropy (model with no specific data in it)
 y_ = tf.placeholder(tf.float32, [None, 10])
-cross_entropy = tf.nn.softmax_cross_entropy_with_logits(logits=tf.matmul(x, W) + b, labels=y_) # more stable numerically
+cross_entropy = tf.nn.softmax_cross_entropy_with_logits(logits=y, labels=y_) # more stable numerically
 # step 4: assign optimizer for training
 train_step = tf.train.GradientDescentOptimizer(0.5).minimize(cross_entropy)
 # step 5: active session in an InteractiveSession
+# InteractiveSession class, which makes TensorFlow more flexible about how you structure your code.
 sess = tf.InteractiveSession()
 # step 6: initialize all variables and launch the model by run()
 tf.global_variables_initializer().run()
@@ -38,6 +39,5 @@ for _ in range(1000):
 correct_prediction = tf.equal(tf.argmax(y, 1), tf.argmax(y_, 1))
 # step 2: compute accuracy
 accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
-
 # step 3: print accuracy from graph, we need to apply sess.run in order to print result of test dataset
 print(sess.run(accuracy, feed_dict={x: mnist.test.images, y_: mnist.test.labels}))
