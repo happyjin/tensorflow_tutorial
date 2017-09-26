@@ -1,3 +1,5 @@
+import os
+os.environ['TF_CPP_MIN_LOG_LEVEL']='2'
 import tensorflow as tf
 from tensorflow.examples.tutorials.mnist import input_data
 
@@ -14,16 +16,16 @@ x = tf.placeholder(tf.float32, [None, 784]) # None means that a dimension can be
 W = tf.Variable(tf.zeros([784, 10])) # initialize this variable with zeros
 b = tf.Variable(tf.zeros([10]))
 # step 2: implement model (model with no specific data in it)
-y = tf.nn.softmax(tf.matmul(x, W) + b)
+#y = tf.nn.softmax(tf.matmul(x, W) + b)
 # step 3: implement cross-entropy (model with no specific data in it)
 y_ = tf.placeholder(tf.float32, [None, 10])
-cross_entropy = tf.reduce_mean(-tf.reduce_sum(y_ * tf.log(y)), reduction_indices=[1]) # reduction_indices is the old (deprecated) name for axis.
+cross_entropy = tf.nn.softmax_cross_entropy_with_logits(logits=tf.matmul(x, W) + b, labels=y_) # more stable numerically
 # step 4: assign optimizer for training
 train_step = tf.train.GradientDescentOptimizer(0.5).minimize(cross_entropy)
 # step 5: active session in an InteractiveSession
 sess = tf.InteractiveSession()
 # step 6: initialize all variables and launch the model by run()
-tf.global_variable_initializer().run()
+tf.global_variables_initializer().run()
 # step 7: train for 1000 steps
 for _ in range(1000):
     # Each step of the loop, we get a "batch" of one hundred random data points from our training set
