@@ -1,3 +1,5 @@
+import os
+os.environ['TF_CPP_MIN_LOG_LEVEL']='2'
 import tensorflow as tf
 from tensorflow.examples.tutorials.mnist import input_data
 mnist = input_data.read_data_sets('MNIST_data', one_hot=True)
@@ -32,4 +34,23 @@ y = tf.matmul(x, W) + b
 # invoke cross_entropy from tf is more numerically stable
 cross_entropy = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(logits=y, labels=y))
 
-# step 7
+# step 7: assign training strategy in this case, Steep Gradient Descent
+# use SGD with a step length of 0.5 to descend the cross entropy.
+# essentially, Tensorflow did is to add new operations to the computation graph. These operations included ones to
+# compute gradients, compute parameter update steps, and apply update steps to the parameters
+train_step = tf.train.GradientDescentOptimizer(0.5).minimize(cross_entropy)
+
+# step 8: train the model can be accomplished by repeatedly running train_step
+for _ in range(1000):
+    batch = mnist.train.next_batch(100)
+    # when run the returned operation train_step, we will apply the gradient descent updates to the parameters
+    # using feed_dict to replace the placeholder tensors x and y_ with the training examples
+    train_step.run(feed_dict={x: batch[0], y_: batch[1]})
+
+# evaluate the model
+# step 1: count correct prediction
+correct_prediction = tf.equal(tf.argmax(y, 1), tf.argmax(y_, 1))
+# step 2: compute accuracy
+accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
+# step 3: print accuracy from graph, we need to apply sess.run in order to print result of test dataset
+print(sess.run(accuracy, feed_dict={x: mnist.test.images, y_: mnist.test.labels}))
