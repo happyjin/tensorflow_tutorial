@@ -26,4 +26,7 @@ sess = tf.InteractiveSession()
 tf.global_variable_initializer().run()
 # step 7: train for 1000 steps
 for _ in range(1000):
+    # Each step of the loop, we get a "batch" of one hundred random data points from our training set
     batch_xs, batch_ys = mnist.train.next_batch(100)
+    # run train_step feeding in the batches data to replace the placeholders
+    sess.run(train_step, feed_dict={x: batch_xs, y_: batch_ys})
