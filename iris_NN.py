@@ -1,6 +1,6 @@
 from __future__ import absolute_import
 from __future__ import division
-from __future__ import print_function
+#from __future__ import print_function
 import tensorflow as tf
 import numpy as np
 import urllib
@@ -26,3 +26,10 @@ if not os.path.exists(IRIS_TEST):
     f.write(raw)
 
 # load training dataset and test dataset using function in tf
+training_set = tf.contrib.learn.datasets.base.load_csv_with_header(
+    filename=IRIS_TRAINING, target_dtype=np.int, features_dtype=np.float32)
+test_set = tf.contrib.learn.datasets.base.load_csv_with_header(
+    filename=IRIS_TEST, target_dtype=np.int, features_dtype=np.float32)
+
+#print training_set.data
+#print training_set.target
