@@ -32,8 +32,9 @@ def get_input_fn(data_set, num_epochs=None, shuffle=True):
     return tf.estimator.inputs.pandas_input_fn(
         x = pd.DataFrame({k: data_set[k].values for k in FEATURES}), # pass any data_set include training_set, test_set
         y = pd.Series(data_set[LABEL].values),
-        # num_epochs controls the number of epochs to iterate over data. For training, set this to None
-        # input_fn will iterate over once and then raise OutOfRangeError
+        # num_epochs controls the number of epochs to iterate over data. For training, set this to None,
+        # so the input_fn keeps returning data until the required numebr of train steps is reached
+        # For evaluate and predict set this to 1, so input_fn will iterate over once and then raise OutOfRangeError
         num_epochs=num_epochs,
         # For evaluate and predict, set this to False so that iterate over the data sequentially
         # For train, set this to True
@@ -49,4 +50,11 @@ ev = regressor.evaluate(input_fn=get_input_fn(test_set, num_epochs=1, shuffle=Fa
 loss_score = ev["loss"]
 print("Loss: {0:f}".format(loss_score))
 
-# step 9:
+# step 9: make predictions
+y = regressor.predict(input_fn=get_input_fn(prediction_set, num_epochs=1, shuffle=False))
+
+# step 10: .predict() returns an iterator of dicts; convert to a list and print predictions
+predictions = list(p["predictions"] for p in itertools.islice(y, 6))
+
+# step 11: print the results
+print("Predictions: {}".format(str(predictions)))
