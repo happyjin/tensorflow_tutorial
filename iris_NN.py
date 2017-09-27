@@ -14,6 +14,7 @@ IRIS_TRAINING_URL = "http://download.tensorflow.org/data/iris_training.csv"
 IRIS_TEST = "iris_test.csv"
 IRIS_TEST_URL = "http://download.tensorflow.org/data/iris_test.csv"
 
+# download datasets
 if not os.path.exists(IRIS_TRAINING):
   raw = urllib.urlopen(IRIS_TRAINING_URL).read()
   with open(IRIS_TRAINING,'w') as f:
@@ -23,3 +24,5 @@ if not os.path.exists(IRIS_TEST):
   raw = urllib.urlopen(IRIS_TEST_URL).read()
   with open(IRIS_TEST,'w') as f:
     f.write(raw)
+
+# load training dataset and test dataset using function in tf
