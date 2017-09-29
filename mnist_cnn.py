@@ -53,8 +53,23 @@ def cnn_model_fn(features, labels, mode):
 
     # step 7: logits layer
     # step 7.1: tf.layers.dense output tensor
+    # there are 10 cases for the output
     logits = tf.layers.dense(inputs=dropout, units=10)
+    # step 7.2: parameter setting for predictions. set "classes" and its "probability"
+    predictions = {
+        # step 7.2.1: generate predictions (for PREDICT and EVAL mode)
+        "classes": tf.argmax(input=logits, axis=1),
+        # step 7.2.2: add and named 'softmax_tensor' to the graph. it is used for PREDICT and by the 'logging_hook'. softmax will
+        # produce a probability for each cases in 10 units of this case
+        "probability": tf.nn.softmax(logits, name="soft_tensor")
+    }
+    # step 7.3: if this is for prediction then return or print the prediction result
+    if mode == tf.estimator.ModeKeys.PREDICT:
+        # 'predictions': `Tensor` or dict of `Tensor`
+        # mode: A `ModeKeys`. Specifies if this is training, evaluation or prediction
+        return tf.estimator.EstimatorSpec(mode=mode, predictions=predictions)
 
+    # step 8: calculate the loss (for both TRAIN and EVAL mode)
 
 
 if __name__ == "__main__":
