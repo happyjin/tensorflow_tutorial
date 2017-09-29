@@ -46,10 +46,15 @@ def cnn_model_fn(features, labels, mode):
     pool2_flat = tf.reshape(pool2, [-1, 7*7*64])
     # step 6.2: dense(FC) layer, units=1024 means hidden layer in this FC layer has 1024 neurons
     dense = tf.layers.dense(inputs=pool2_flat, units=1024, activation=tf.nn.relu)
-    # step 6.3: set dropout strategy for tf.layers when train the model
-
+    # step 6.3: set dropout strategy for tf.layers.dense (FC) layer during training time
+    # "mode == tf.estimator.ModeKeys.TRAIN" to judge if it is training time or not. dropout only
+    # happens in training time, not valid for test time
+    dropout = tf.layers.dropout(dense, rate=0.4, training=mode == tf.estimator.ModeKeys.TRAIN)
 
     # step 7: logits layer
+    # step 7.1: tf.layers.dense output tensor
+    logits = tf.layers.dense(inputs=dropout, units=10)
+
 
 
 if __name__ == "__main__":
