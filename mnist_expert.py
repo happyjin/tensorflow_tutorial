@@ -94,9 +94,14 @@ if __name__ == "__main__":
                 print('step %d, training accuracy %g' % (i, train_accuracy))
             # step 3.2: train the model and feed the current batch data
             train_step.run(feed_dict={x: batch[0], y_: batch[1], keep_prob: 0.5})
-        all_saver.save(sess, 'data.chkp')
+            print train_step
+        #all_saver.save(sess, 'data.chkp')
 
         # step 4: print training result that is accuracy
         print('test accuracy %g' % accuracy.eval(feed_dict={
             x: mnist.test.images, y_: mnist.test.labels, keep_prob: 1.0}))
-        print accuracy.eval(feed_dict={x: mnist.test.images[0]}, session=sess)
+
+        # test
+        test_sample = mnist.test.images[0].reshape(1, -1)
+        test_label = mnist.test.labels[0].reshape(1, -1)
+        #print sess.run(correct_prediction, feed_dict={x: test_sample, y_: test_label})

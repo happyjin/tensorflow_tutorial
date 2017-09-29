@@ -41,7 +41,7 @@ cross_entropy = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(logits=y,
 train_step = tf.train.GradientDescentOptimizer(0.5).minimize(cross_entropy)
 
 # step 8: train the model can be accomplished by repeatedly running train_step
-for _ in range(1000):
+for _ in range(2000):
     batch = mnist.train.next_batch(100)
     # when run the returned operation train_step, we will apply the gradient descent updates to the parameters
     # using feed_dict to replace the placeholder tensors x and y_ with the training examples
