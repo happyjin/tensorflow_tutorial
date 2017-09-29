@@ -58,6 +58,8 @@ def cnn_model_fn(features, labels, mode):
     # step 7.2: parameter setting for predictions. set "classes" and its "probability"
     predictions = {
         # step 7.2.1: generate predictions (for PREDICT and EVAL mode)
+        # we want to find the largest value along the dimension with index of 1, which corresponds to our predictions
+        # (recall that our logits tensor has shape [batch_size, 10])
         "classes": tf.argmax(input=logits, axis=1),
         # step 7.2.2: add and named 'softmax_tensor' to the graph. it is used for PREDICT and by the 'logging_hook'. softmax will
         # produce a probability for each cases in 10 units of this case
@@ -70,6 +72,25 @@ def cnn_model_fn(features, labels, mode):
         return tf.estimator.EstimatorSpec(mode=mode, predictions=predictions)
 
     # step 8: calculate the loss (for both TRAIN and EVAL mode)
+    # step 8.1: generate label into one-hot vector
+    # A one-hot vector is a vector which is 0 in most dimensions, and 1 in a single dimension.
+    onehot_labels = tf.one_hot(indices=tf.cast(labels, tf.int32), depth=10)
+    # step 8.2: compute the loss using softmax_cross_entropy in the tf.losses.softmax_cross_entropy
+    # compare onehot_labels(ground truth) and logits
+    # after computing and get loss which is a scalar Tensor
+    loss = tf.losses.softmax_cross_entropy(onehot_labels=onehot_labels, logits=logits)
+
+    # step 9: configure the training op. (for TRAIN mode)
+    if mode == tf.estimator.ModeKeys.TRAIN:
+        # step 9.1: choose training optimizer
+        optimizer = tf.train.GradientDescentOptimizer(learning_rate=0.001)
+        # step 9.2: using optimizer to minimize the `loss` by updating `var_list`
+        # global_step just keeps track of the number of batches seen so far.
+        # global step record the total number of iterations, maybe used for
+        # changing learning rate or other hyperparameter.
+        train_op = optimizer.minimize(loss=loss, global_step=tf.train.get_global_step())
+        # step 9.3: return the result
+        return tf.estimator.EstimatorSpec(mode=mode, loss=loss, train_op=train_op)
 
 
 if __name__ == "__main__":
