@@ -92,6 +92,12 @@ def cnn_model_fn(features, labels, mode):
         # step 9.3: return the result
         return tf.estimator.EstimatorSpec(mode=mode, loss=loss, train_op=train_op)
 
+    # step 10: add evaluation matrices
+    # step 10.1: define eval_metric_ops dict in EVAL mode as follows
+    eval_metric_ops = {
+        "accuracy": tf.metrics.accuracy(labels=labels, predictions=predictions["classes"])
+    }
+
 
 if __name__ == "__main__":
     # tf.app is just a generic entry point script, which runs the program with an optional 'main' function and 'argv' list
