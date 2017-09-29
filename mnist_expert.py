@@ -28,6 +28,7 @@ def max_pool_2x2(x):
 
 
 if __name__ == "__main__":
+    # step 1: define placeholder in order to assign data
     x = tf.placeholder(tf.float32, shape=[None, 784])
     y_ = tf.placeholder(tf.float32, [None, 10])
     ### build the CNN model
