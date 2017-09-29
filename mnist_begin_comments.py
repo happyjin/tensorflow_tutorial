@@ -54,3 +54,9 @@ correct_prediction = tf.equal(tf.argmax(y, 1), tf.argmax(y_, 1))
 accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
 # step 3: print accuracy from graph, we need to apply sess.run in order to print result of test dataset
 print(sess.run(accuracy, feed_dict={x: mnist.test.images, y_: mnist.test.labels}))
+
+# step 4: make prediction
+test_sample = mnist.test.images[0].reshape(1, -1)
+print test_sample.shape
+test_label = mnist.test.labels[0]
+print sess.run(y, feed_dict={x: test_sample})
