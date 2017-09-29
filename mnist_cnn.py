@@ -106,6 +106,32 @@ def cnn_model_fn(features, labels, mode):
     return tf.estimator.EstimatorSpec(mode=mode, loss=loss, eval_metric_ops=eval_metric_ops)
 
 
+def main(unused_argv):
+    """
+    load the training and test data
+    :param unused_argv:
+    :return:
+    """
+    # step 1: load training and eval data
+    mnist = tf.contrib.learn.datasets.load_dataset("mnist")
+    train_data = mnist.train.images # return np.array
+    train_labels = np.asarray(mnist.train.labels, dtype=np.int32)
+    eval_data = mnist.test.images
+    eval_labels = np.asarray(mnist.test.labels, dtype=np.int32)
+
+    # step 2: create the estimator
+    # Constructs an `Estimator` instance. cnn_model_fn is `EstimatorSpec`
+    # which is fully defines the model to be run by `Estimator`.
+    # model_fn argument specifies the model function to use for training, evaluation, and prediction
+    mnist_classifier = tf.estimator.Estimator(model_fn=cnn_model_fn, model_dir="/Users/lijin/Desktop/tmp")
+
+    # step 3: set up a logging hook in order to track progress during training
+    # step 3.1: define dictionary
+    tensors_to_log = {"probabilities": "softmax_tensor"}
+    # step 3.2: set up logging
+    logging_hook = tf.train.LoggingTensorHook(tensors=tensors_to_log, every_n_iter=50)
+
+
 if __name__ == "__main__":
     # tf.app is just a generic entry point script, which runs the program with an optional 'main' function and 'argv' list
     # it is nothing to do with neural networks and it just calls the main function, passing through any arguments to it
