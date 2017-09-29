@@ -74,15 +74,19 @@ if __name__ == "__main__":
     correct_prediction = tf.equal(tf.argmax(y_conv, 1), tf.argmax(y_, 1))
     accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
 
+    ### save graph includes Variables using saver object
+    all_saver = tf.train.Saver()
+
     # step 2: pass real data(for placeholder) into model and train the model using session
     with tf.Session() as sess:
         # step 2.1: initialize all variables before using them
         sess.run(tf.global_variables_initializer())
         # step 3: set training maximum training steps
-        for i in range(500):
+        for i in range(200):
             # step 3.1: set batch_size
             batch = mnist.train.next_batch(50)
             if i % 100 == 0:
+                #print sess.run(tf.trainable_variables()) # print all training variables for this model
                 # step 3.3: evaluate the model after every 100 steps
                 train_accuracy = accuracy.eval(feed_dict={
                     x: batch[0], y_: batch[1], keep_prob: 1.0})
@@ -90,7 +94,9 @@ if __name__ == "__main__":
                 print('step %d, training accuracy %g' % (i, train_accuracy))
             # step 3.2: train the model and feed the current batch data
             train_step.run(feed_dict={x: batch[0], y_: batch[1], keep_prob: 0.5})
+        all_saver.save(sess, 'data.chkp')
 
-        # step 4:
+        # step 4: print training result that is accuracy
         print('test accuracy %g' % accuracy.eval(feed_dict={
             x: mnist.test.images, y_: mnist.test.labels, keep_prob: 1.0}))
+        print accuracy.eval(feed_dict={x: mnist.test.images[0]}, session=sess)
