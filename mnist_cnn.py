@@ -67,6 +67,7 @@ def cnn_model_fn(features, labels, mode):
     }
     # step 7.3: if this is for prediction then return or print the prediction result
     if mode == tf.estimator.ModeKeys.PREDICT:
+        # `EstimatorSpec` is fully defines the model to be run by `Estimator`.
         # 'predictions': `Tensor` or dict of `Tensor`
         # mode: A `ModeKeys`. Specifies if this is training, evaluation or prediction
         return tf.estimator.EstimatorSpec(mode=mode, predictions=predictions)
@@ -95,8 +96,14 @@ def cnn_model_fn(features, labels, mode):
     # step 10: add evaluation matrices
     # step 10.1: define eval_metric_ops dict in EVAL mode as follows
     eval_metric_ops = {
+        # tf.metrics.accuracy: calculates how often `predictions` matches `labels`. and return a `Tensor` representing the accuracy
+        # predictions: The predicted values, a `Tensor` of any shape.
         "accuracy": tf.metrics.accuracy(labels=labels, predictions=predictions["classes"])
     }
+    # step 10.2: return the evaluation result
+    # eval_metric_ops: Dict of metric results keyed by name. The values of
+    # the dict are the results of calling a metric function
+    return tf.estimator.EstimatorSpec(mode=mode, loss=loss, eval_metric_ops=eval_metric_ops)
 
 
 if __name__ == "__main__":
