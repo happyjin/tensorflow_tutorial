@@ -10,10 +10,18 @@ tf.logging.set_verbosity(tf.logging.INFO)
 def cnn_model_fn(features, labels, mode):
     """
     model function for CNN
-    :param features: input data
-    :param labels: labels for data
-    :param mode:
-    :return:
+    :param features: This is the first item returned from the `input_fn`
+                 passed to `train`, `evaluate`, and `predict`. This should be a
+                 single `Tensor` or `dict` of same.
+    :param labels: This is the second item returned from the `input_fn`
+                 passed to `train`, `evaluate`, and `predict`. This should be a
+                 single `Tensor` or `dict` of same (for multi-head models). If
+                 mode is `ModeKeys.PREDICT`, `labels=None` will be passed. If
+                 the `model_fn`'s signature does not accept `mode`, the
+                 `model_fn` must still be able to handle `labels=None`.
+    :param mode: Optional. Specifies if this training, evaluation or
+                 prediction. See `ModeKeys`
+    :return: `EstimatorSpec`
     """""
     # step 1: input layer (tf.layer will accepts a tensor as input) so that we need to
     # reshape features into tensorflow data format(tensor) using tf.reshape
@@ -137,6 +145,9 @@ def main(unused_argv):
 
     # step 4: train the model
     # step 4.1: set up the train input function
+    # Input function returning a tuple of:
+    # features - `Tensor` or dictionary of string feature name to `Tensor`.
+    # labels - `Tensor` or dictionary of `Tensor` with labels.
     train_input_fn = tf.estimator.inputs.numpy_input_fn(
         x={"x": train_data}, # dictionary
         y=train_labels,
@@ -144,7 +155,10 @@ def main(unused_argv):
         shuffle=True
     )
     # step 4.2: use mnist_classifier from tf.estimator.Estimator which assign cnn_model_fn to train the model
-
+    # Trains a model given training data input_fn.
+    # steps: Number of steps for which to train model.
+    # hooks: List of `SessionRunHook` subclass instances. Used for callbacks inside the training loop.
+    mnist_classifier.train(input_fn=train_input_fn, steps=20000, hooks=[logging_hook])
 
 
 if __name__ == "__main__":
