@@ -129,6 +129,9 @@ def main(unused_argv):
     # step 3.1: define dictionary
     tensors_to_log = {"probabilities": "softmax_tensor"}
     # step 3.2: set up logging
+    # Prints the given tensors every N local steps, every N seconds, or at end.
+    # tensors: store a dict of the tensors we want to log in tensors_to_log, Each key is a label of our choice
+    # tensors: `dict` that maps string-valued tags to tensors/tensor names, our probabilities can be found in softmax_tensor
     logging_hook = tf.train.LoggingTensorHook(tensors=tensors_to_log, every_n_iter=50)
 
 
