@@ -132,7 +132,19 @@ def main(unused_argv):
     # Prints the given tensors every N local steps, every N seconds, or at end.
     # tensors: store a dict of the tensors we want to log in tensors_to_log, Each key is a label of our choice
     # tensors: `dict` that maps string-valued tags to tensors/tensor names, our probabilities can be found in softmax_tensor
+    # probabilities should be logged after every 50 steps of training.
     logging_hook = tf.train.LoggingTensorHook(tensors=tensors_to_log, every_n_iter=50)
+
+    # step 4: train the model
+    # step 4.1: set up the train input function
+    train_input_fn = tf.estimator.inputs.numpy_input_fn(
+        x={"x": train_data}, # dictionary
+        y=train_labels,
+        batch_size=100,
+        shuffle=True
+    )
+    # step 4.2: use mnist_classifier from tf.estimator.Estimator which assign cnn_model_fn to train the model
+
 
 
 if __name__ == "__main__":
