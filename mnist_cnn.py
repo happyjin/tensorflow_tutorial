@@ -137,6 +137,7 @@ def main(unused_argv):
     # step 3.1: define dictionary
     tensors_to_log = {"probabilities": "softmax_tensor"}
     # step 3.2: set up logging
+    # since cnn can take a while to train, let's set up some logging so we can track progress during training
     # Prints the given tensors every N local steps, every N seconds, or at end.
     # tensors: store a dict of the tensors we want to log in tensors_to_log, Each key is a label of our choice
     # tensors: `dict` that maps string-valued tags to tensors/tensor names, our probabilities can be found in softmax_tensor
@@ -148,6 +149,7 @@ def main(unused_argv):
     # Input function returning a tuple of:
     # features - `Tensor` or dictionary of string feature name to `Tensor`.
     # labels - `Tensor` or dictionary of `Tensor` with labels.
+    # batch_size=100: the model will train on minibatches of 100 examples at each step
     train_input_fn = tf.estimator.inputs.numpy_input_fn(
         x={"x": train_data}, # dictionary
         y=train_labels,
@@ -158,7 +160,24 @@ def main(unused_argv):
     # Trains a model given training data input_fn.
     # steps: Number of steps for which to train model.
     # hooks: List of `SessionRunHook` subclass instances. Used for callbacks inside the training loop.
+    # we pass logging_hook to the hooks argument, so that it will be triggered during training
     mnist_classifier.train(input_fn=train_input_fn, steps=20000, hooks=[logging_hook])
+
+    # step 5: evaluate the model. evaluate the model to determine its accuracy on the MNIST test set
+    # step 5.1: define eval_input_fn dictionary
+    eval_input_fn = tf.estimator.inputs.numpy_input_fn(
+        x={"x": eval_data},
+        y=eval_labels,
+        num_epochs=1,
+        shuffle=False
+    )
+    # step 5.2: recall evaluation method from Estimator class
+    # evaluate method returns a dict containing the evaluation metrics specified in `model_fn` keyed
+    # by name, as well as an entry `global_step`
+    eval_results = mnist_classifier.evaluate(eval_input_fn=eval_input_fn)
+    # step 5.3: print evaluation result
+    print eval_results
+
 
 
 if __name__ == "__main__":
