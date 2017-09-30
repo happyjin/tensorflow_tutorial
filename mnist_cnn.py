@@ -1,7 +1,7 @@
 import numpy as np
 import tensorflow as tf
-import os
-os.environ['TF_CPP_MIN_LOG_LEVEL']='2'
+#import os
+#os.environ['TF_CPP_MIN_LOG_LEVEL']='2'
 
 # set information on TensorFlow logging
 tf.logging.set_verbosity(tf.logging.INFO)
@@ -71,7 +71,7 @@ def cnn_model_fn(features, labels, mode):
         "classes": tf.argmax(input=logits, axis=1),
         # step 7.2.2: add and named 'softmax_tensor' to the graph. it is used for PREDICT and by the 'logging_hook'. softmax will
         # produce a probability for each cases in 10 units of this case
-        "probability": tf.nn.softmax(logits, name="soft_tensor")
+        "probability": tf.nn.softmax(logits, name="softmax_tensor")
     }
     # step 7.3: if this is for prediction then return or print the prediction result
     if mode == tf.estimator.ModeKeys.PREDICT:
@@ -161,7 +161,8 @@ def main(unused_argv):
     # steps: Number of steps for which to train model.
     # hooks: List of `SessionRunHook` subclass instances. Used for callbacks inside the training loop.
     # we pass logging_hook to the hooks argument, so that it will be triggered during training
-    mnist_classifier.train(input_fn=train_input_fn, steps=20000, hooks=[logging_hook])
+    #mnist_classifier.train(input_fn=train_input_fn, steps=1000, hooks=[logging_hook])
+    mnist_classifier.train(input_fn=train_input_fn, steps=100)
 
     # step 5: evaluate the model. evaluate the model to determine its accuracy on the MNIST test set
     # step 5.1: define eval_input_fn dictionary
@@ -174,10 +175,21 @@ def main(unused_argv):
     # step 5.2: recall evaluation method from Estimator class
     # evaluate method returns a dict containing the evaluation metrics specified in `model_fn` keyed
     # by name, as well as an entry `global_step`
-    eval_results = mnist_classifier.evaluate(eval_input_fn=eval_input_fn)
+    eval_results = mnist_classifier.evaluate(input_fn=eval_input_fn)
     # step 5.3: print evaluation result
     print eval_results
 
+    # step 6: test model
+    # step 6.1: define test_input_fn dictionary
+    test_input_fn = tf.estimator.inputs.numpy_input_fn(
+        x={"x": eval_data},
+        num_epochs=1,
+        shuffle=False
+    )
+    # step 6.2: recall predict method from Estimator class
+    test_results = mnist_classifier.predict(input_fn=test_input_fn)
+    # step 6.3: print test results for the test features
+    print('Predictions: {}'.format(list(test_results)))
 
 
 if __name__ == "__main__":
