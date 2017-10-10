@@ -33,3 +33,4 @@ for i in range(1000):
 # Since loss contains placeholder x and y then we need to assign x and y
 curr_W, curr_b, curr_loss = sess.run([W, b, loss], {x: x_train, y: y_trian}) # if you want to display its value of graph then use sess.run
 print("W: %s b: %s loss: %s"%(curr_W, curr_b, curr_loss))
+print("test")
